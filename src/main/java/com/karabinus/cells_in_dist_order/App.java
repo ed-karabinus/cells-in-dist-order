@@ -9,7 +9,6 @@ import java.util.Map;
 public class App {
     private static double numberOfMillisecondsPerSecond = 1000.0;
 
-    // Problem taken from https://leetcode.com/problems/matrix-cells-in-distance-order
     public static void main(String[] args) {
         if (args.length < 4) {
             return;
