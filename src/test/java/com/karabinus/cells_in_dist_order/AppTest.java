@@ -26,7 +26,7 @@ public class AppTest
         assertTrue(resultAsNestedLists.get(1).equals(Arrays.asList(0, 1)));
     }
 
-    @Test(timeout = 100) 
+    @Test(timeout = 25) 
     public void largeMatrixWithTimeout() {
         app.allCellsDistOrder(89, 90, 21, 65);
     }

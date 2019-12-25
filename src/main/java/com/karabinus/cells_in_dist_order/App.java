@@ -1,10 +1,7 @@
 package com.karabinus.cells_in_dist_order;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public class App {
     private static double numberOfMillisecondsPerSecond = 1000.0;
@@ -23,37 +20,27 @@ public class App {
         System.out.printf("%.3f seconds elapsed.\n", (finish - start) / numberOfMillisecondsPerSecond);
     }
 
-    private int r0;
-    private int c0;
-
     public int[][] allCellsDistOrder(int R, int C, int r0, int c0) {
-        this.r0 = r0;
-        this.c0 = c0;
-        Map<Integer, List<List<Integer>>> cellsIndexedByDistance = new HashMap<>();
-        for (int rIndex = 0; rIndex < R; rIndex++) {
-            for (int cIndex = 0; cIndex < C; cIndex++) {
-                List<Integer> coordinates = Arrays.asList(rIndex, cIndex);
-                int manhattanDistance = getManhattanDistanceFromCell(coordinates);
-                List<List<Integer>> existingCells = 
-                    cellsIndexedByDistance.getOrDefault(manhattanDistance, new ArrayList<>());
-                existingCells.add(coordinates);
-                cellsIndexedByDistance.put(manhattanDistance, existingCells);
+        int[][] cellsInDistOrder = new int[R * C][2];
+        boolean[][] visited = new boolean[R][C];
+        int distOrderIndex = 0;
+        Deque<int[]> bfsQueue = new ArrayDeque<>();
+        bfsQueue.offerLast(new int[] {r0, c0});
+        while (bfsQueue.peekFirst() != null) {
+            int[] coordinates = bfsQueue.pollFirst();
+            int r = coordinates[0];
+            int c = coordinates[1];
+            if (r < 0 || c < 0 || r >= R || c >= C || visited[r][c]) {
+                continue;
             }
+            cellsInDistOrder[distOrderIndex] = coordinates;
+            visited[r][c] = true;
+            distOrderIndex++;
+            bfsQueue.offerLast(new int[] {r + 1, c});
+            bfsQueue.offerLast(new int[] {r - 1, c});
+            bfsQueue.offerLast(new int[] {r, c + 1});
+            bfsQueue.offerLast(new int[] {r, c - 1});
         }
-        List<List<Integer>> cellsInDistOrder = new ArrayList<>();
-        for (int distanceIndex = 0; cellsIndexedByDistance.get(distanceIndex) != null; distanceIndex++) {
-            for (List<Integer> cell : cellsIndexedByDistance.get(distanceIndex)) {
-                cellsInDistOrder.add(cell);
-            }
-        }
-        return cellsInDistOrder.stream()
-            .map(coordinate -> coordinate.stream().mapToInt(Integer::intValue).toArray())
-            .toArray(int[][]::new);
-    }
-    
-    private int getManhattanDistanceFromCell(List<Integer> coordinates) {
-        int r = coordinates.get(0);
-        int c = coordinates.get(1);
-        return Math.abs(r - r0) + Math.abs(c - c0);
+        return cellsInDistOrder;
     }
 }
